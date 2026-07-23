@@ -77,6 +77,10 @@ def append_to_sheet(menu: str, qty: int, price: float) -> dict:
     }
 
 
+append_sale = append_to_sheet
+
+
+
 
 def send_notification(message: str) -> str:
     """TODO 2: ส่ง message ไปยัง Telegram bot (ใช้ TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID)
