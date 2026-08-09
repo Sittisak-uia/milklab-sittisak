@@ -13,6 +13,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import datetime
 
 from dotenv import load_dotenv
 from google import genai
@@ -26,8 +27,10 @@ Convert one Thai user message into ONE JSON action.
 
 Allowed actions:
 - log_sale(menu, quantity, price)
+- get_today_summary()
 - get_yesterday_summary()
 - send_telegram_report(message, confirm)
+- get_tracelog(lines)
 - unknown
 
 Return JSON only. No markdown. Numbers numeric.
@@ -35,6 +38,48 @@ Schema:
 { "action":..., "arguments":{}, "confidence":0.0, "reason":"<short Thai>" }
 '''
 
+
+
+def write_tracelog(stage: str, content: str) -> None:
+    """Write agent trace log to agent_tracelog.txt in format:
+    YYYY-MM-DD HH:MM | stage | content
+    """
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+        log_line = f"{timestamp} | {stage} | {content}\n"
+        with open("agent_tracelog.txt", "a", encoding="utf-8") as f:
+            f.write(log_line)
+    except Exception as e:
+        print(f"[ERROR] Failed to write to agent_tracelog.txt: {e}", file=sys.stderr)
+
+
+def format_tracelog_result(result: dict) -> str:
+    """Format the result of the tool run for the trace log."""
+    if not result.get("ok"):
+        return f"เกิดข้อผิดพลาด: {result.get('error')}"
+    
+    action = result.get("action")
+    output = result.get("output")
+    
+    if action == "log_sale":
+        if isinstance(output, dict):
+            menu = output.get("menu", "")
+            qty = output.get("qty", 0)
+            total = output.get("total", 0)
+            return f"บันทึก {menu} จำนวน {qty} รายการ (รวม {int(total)} บาท) เรียบร้อยแล้ว"
+        return str(output)
+    elif action == "get_today_summary":
+        return "สรุปยอดขายประจำวัน เรียบร้อยแล้ว"
+    elif action == "get_yesterday_summary":
+        return "สรุปยอดขายประจำวันเมื่อวาน เรียบร้อยแล้ว"
+    elif action == "get_tracelog":
+        return "แสดง log การทำงาน เรียบร้อยแล้ว"
+    elif action == "send_telegram_report":
+        if isinstance(output, dict):
+            return f"ส่งรายงาน '{output.get('message')}' สำเร็จ"
+        return "ส่งรายงานสำเร็จ"
+    else:
+        return str(output).split('\n')[0] if output else "ดำเนินการเรียบร้อย"
 
 
 def write_trace(data: dict) -> None:
@@ -158,10 +203,23 @@ def dispatch_tool(tool_call: dict) -> str:
 def run(message: str, api_key: str | None = None) -> dict:
     """Run full pipeline with stage tracing: user_input -> plan -> result."""
     write_trace({"stage": "user_input", "input": message})
+    write_tracelog("user_input", message)
+
     plan = classify_message(message, api_key)
     write_trace({"stage": "plan", "plan": plan})
+
+    llm_content = json.dumps({
+        "tool": plan.get("action", "unknown"),
+        "args": plan.get("arguments", {})
+    }, ensure_ascii=False)
+    write_tracelog("llm_response", llm_content)
+
     result = dispatch(plan)
     write_trace({"stage": "result", "result": result})
+
+    result_content = format_tracelog_result(result)
+    write_tracelog("tool_result", result_content)
+
     return result
 
 

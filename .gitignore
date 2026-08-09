@@ -36,6 +36,7 @@ $RECYCLE.BIN/
 
 # Logs
 *.log
+agent_tracelog.txt
 
 # Streamlit
 .streamlit/secrets.toml

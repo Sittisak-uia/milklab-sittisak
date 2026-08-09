@@ -43,6 +43,12 @@ def get_yesterday_summary():
     return morning_report.generate_report(records)
 
 
+def get_today_summary():
+    today = datetime.now().strftime("%Y-%m-%d")
+    records = query_sales(today)
+    return morning_report.generate_report(records)
+
+
 def send_telegram_report(message, confirm):
     if isinstance(confirm, str):
         confirm = confirm.lower() in ("true", "1", "yes", "confirm")
@@ -52,6 +58,26 @@ def send_telegram_report(message, confirm):
         return {"ok": False, "error": "Not confirmed"}
     provider = morning_report.send_notification(message)
     return {"ok": True, "provider": provider, "message": message}
+
+
+def get_tracelog(lines=10):
+    try:
+        lines = int(lines)
+    except (ValueError, TypeError):
+        lines = 10
+        
+    try:
+        import os
+        if not os.path.exists("agent_tracelog.txt"):
+            return "ยังไม่มีข้อมูลใน Log"
+            
+        with open("agent_tracelog.txt", "r", encoding="utf-8") as f:
+            all_lines = f.readlines()
+            
+        last_lines = all_lines[-lines:]
+        return "".join(last_lines).strip()
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการอ่าน Log: {e}"
 
 
 TOOL_REGISTRY = {
@@ -75,10 +101,20 @@ TOOL_REGISTRY = {
         "args": (),
         "coerce": {},
     },
+    "get_today_summary": {
+        "fn": get_today_summary,
+        "args": (),
+        "coerce": {},
+    },
     "send_telegram_report": {
         "fn": send_telegram_report,
         "args": ("message", "confirm"),
         "coerce": {"message": str},
+    },
+    "get_tracelog": {
+        "fn": get_tracelog,
+        "args": ("lines",),
+        "coerce": {"lines": int},
     },
 }
 
