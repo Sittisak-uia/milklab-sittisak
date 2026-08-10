@@ -30,11 +30,32 @@ import numpy as np
 import streamlit as st
 from dotenv import load_dotenv
 from google import genai
-from sentence_transformers import SentenceTransformer
 import faiss
 
 # Load environmental variables
 load_dotenv()
+
+class GeminiEmbeddingModel:
+    """Wrapper to mimic SentenceTransformer using Google GenAI text-embedding-004 API."""
+    def __init__(self, api_key: str):
+        self.client = genai.Client(api_key=api_key)
+
+    def encode(self, texts: list[str] | str) -> np.ndarray:
+        if isinstance(texts, str):
+            texts = [texts]
+        
+        all_embeddings = []
+        batch_size = 250
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i:i + batch_size]
+            response = self.client.models.embed_content(
+                model="text-embedding-004",
+                contents=batch
+            )
+            batch_embeddings = [emb.values for emb in response.embeddings]
+            all_embeddings.extend(batch_embeddings)
+            
+        return np.array(all_embeddings).astype("float32")
 
 
 def log_span(name: str, trace_id: str, start_time: float, end_time: float, input_data: dict, output_data: dict, error: str = None):
@@ -75,7 +96,7 @@ def log_span(name: str, trace_id: str, start_time: float, end_time: float, input
 
 @st.cache_resource
 def load_index(filepath: str, mtime: float):
-    """โหลดไฟล์ md, split เป็น chunk, encode ด้วย sentence-transformers,
+    """โหลดไฟล์ md, split เป็น chunk, encode ด้วย Gemini Embedding API,
     สร้าง faiss index. Cache จะถูกเคลียร์เมื่อไฟล์มีการอัปเดต (mtime เปลี่ยน)
 
     Returns: (model, index, chunks_list)
@@ -90,9 +111,13 @@ def load_index(filepath: str, mtime: float):
     raw_chunks = text.split("\n\n")
     chunks = [c.strip() for c in raw_chunks if c.strip()]
 
-    # Encode using paraphrase-multilingual-MiniLM-L12-v2 for quality Thai embeddings
-    model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
-    embeddings = model.encode(chunks).astype("float32")
+    # Encode using Gemini text-embedding-004 API (saves significant memory/RAM)
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise RuntimeError("GOOGLE_API_KEY not found in environment settings.")
+        
+    model = GeminiEmbeddingModel(api_key=api_key)
+    embeddings = model.encode(chunks)
 
     # Create L2 Distance FAISS index
     dimension = embeddings.shape[1]
