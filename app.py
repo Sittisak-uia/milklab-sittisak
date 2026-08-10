@@ -49,7 +49,7 @@ class GeminiEmbeddingModel:
         for i in range(0, len(texts), batch_size):
             batch = texts[i:i + batch_size]
             response = self.client.models.embed_content(
-                model="text-embedding-004",
+                model="gemini-embedding-001",
                 contents=batch
             )
             batch_embeddings = [emb.values for emb in response.embeddings]
@@ -111,7 +111,7 @@ def load_index(filepath: str, mtime: float):
     raw_chunks = text.split("\n\n")
     chunks = [c.strip() for c in raw_chunks if c.strip()]
 
-    # Encode using Gemini text-embedding-004 API (saves significant memory/RAM)
+    # Encode using Gemini gemini-embedding-001 API (saves significant memory/RAM)
     api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         raise RuntimeError("GOOGLE_API_KEY not found in environment settings.")
