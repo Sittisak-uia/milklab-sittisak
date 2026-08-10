@@ -11,6 +11,11 @@ import time
 import json
 from datetime import datetime
 
+# Set PyTorch to single-thread mode to save RAM in low-memory environments (like Render 512MB)
+import torch
+torch.set_num_threads(1)
+torch.set_num_interop_threads(1)
+
 # Reconfigure stdout/stderr to handle UTF-8 printing safely on Windows consoles
 if hasattr(sys.stdout, "reconfigure"):
     try:
