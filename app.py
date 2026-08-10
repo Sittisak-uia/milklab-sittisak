@@ -5,16 +5,18 @@ Deploy: push to GitHub then Actions deploys to HuggingFace Space
 """
 
 import os
+# Set thread limits programmatically before importing numpy/torch to save RAM and avoid interop thread errors
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
 import sys
 import uuid
 import time
 import json
 from datetime import datetime
-
-# Set PyTorch to single-thread mode to save RAM in low-memory environments (like Render 512MB)
-import torch
-torch.set_num_threads(1)
-torch.set_num_interop_threads(1)
 
 # Reconfigure stdout/stderr to handle UTF-8 printing safely on Windows consoles
 if hasattr(sys.stdout, "reconfigure"):
