@@ -107,9 +107,23 @@ def load_index(filepath: str, mtime: float):
     with open(filepath, "r", encoding="utf-8") as f:
         text = f.read()
 
-    # Split by double newlines to segment by sections/paragraphs
+    # Split by double newlines to segment by sections/paragraphs, grouping headers with content
     raw_chunks = text.split("\n\n")
-    chunks = [c.strip() for c in raw_chunks if c.strip()]
+    chunks = []
+    current_chunk = []
+    for c in raw_chunks:
+        c_clean = c.strip()
+        if not c_clean:
+            continue
+        if c_clean.startswith("#"):
+            if current_chunk:
+                chunks.append("\n\n".join(current_chunk))
+                current_chunk = []
+            current_chunk.append(c_clean)
+        else:
+            current_chunk.append(c_clean)
+    if current_chunk:
+        chunks.append("\n\n".join(current_chunk))
 
     # Encode using Gemini gemini-embedding-001 API (saves significant memory/RAM)
     api_key = os.environ.get("GOOGLE_API_KEY")

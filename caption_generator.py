@@ -32,7 +32,7 @@ def generate_caption(menu: str, api_key: str | None = None) -> str:
         raise RuntimeError("GOOGLE_API_KEY not set in env or argument")
     client = genai.Client(api_key=key)
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-3.5-flash",
         contents=PROMPT_TEMPLATE.format(menu=menu),
     )
     return response.text or ""

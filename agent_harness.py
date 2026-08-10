@@ -98,7 +98,7 @@ def classify_message(cmd: str, api_key: str | None = None) -> dict:
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash",
             contents=cmd,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION,
