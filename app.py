@@ -188,16 +188,16 @@ def generate_answer(query: str, context_chunks: list[str], trace_id: str = None)
 
         client = genai.Client(api_key=api_key)
 
-        # Build prompt enforcing context restrictions and adding menu listing flexibility
+        # Build prompt enforcing context restrictions and adding product listing flexibility
         context_text = "\n\n".join(context_chunks)
-        prompt = f"""คุณคือผู้ช่วยตอบคำถามของร้าน MilkLab° โดยใช้ข้อมูลต่อไปนี้ในการตอบเท่านั้น:
+        prompt = f"""คุณคือผู้ช่วยตอบคำถามของร้าน GameLab° โดยใช้ข้อมูลต่อไปนี้ในการตอบเท่านั้น:
 ---
 {context_text}
 ---
 
 เงื่อนไข:
 - ตอบคำถามโดยใช้ข้อมูลจาก Context ข้างต้นเท่านั้น
-- หากลูกค้าขอให้แนะนำเมนู หรือถามเกี่ยวกับรายการเมนูทั้งหมด ให้แนะนำหรือระบุรายการเมนูที่มีอยู่ใน Context ได้เลย
+- หากลูกค้าขอให้แนะนำสินค้า หรือถามเกี่ยวกับรายการบัตรเติมเกมทั้งหมด ให้แนะนำหรือระบุรายการสินค้าที่มีอยู่ใน Context ได้เลย
 - ถ้าไม่มีข้อมูลเกี่ยวกับเรื่องที่ถามใน Context เลย ให้บอกตรงๆ ว่า "ขออภัยด้วยครับ ฉันไม่มีข้อมูลเรื่องนี้" หรือ "ไม่ทราบครับ" ห้ามเดาหรือจินตนาการคำตอบเองนอกเหนือจากข้อมูลใน Context เด็ดขาด
 - ตอบอย่างเป็นกันเองและสุภาพในภาษาไทย
 
@@ -227,7 +227,7 @@ def generate_answer(query: str, context_chunks: list[str], trace_id: str = None)
 
 
 def main():
-    st.set_page_config(page_title="MilkLab° RAG-Chatbot", page_icon="🥛")
+    st.set_page_config(page_title="GameLab° RAG-Chatbot", page_icon="🎮")
     
     # Inject Cyberpunk CSS Styling with High Contrast Readability
     st.markdown("""
@@ -342,19 +342,17 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h1 class='main-title'>MilkLab° RAG-Chatbot</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='caption-text'>ร้าน MilkLab° ยินดีให้บริการ</p>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>GameLab° RAG-Chatbot</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='caption-text'>ร้าน GameLab° ยินดีให้บริการ</p>", unsafe_allow_html=True)
 
     # Resolve path relative to this script's directory
     current_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # Try menu_kd.md first, fall back to menu_kb.md
-    filepath = os.path.join(current_dir, "menu_kd.md")
-    if not os.path.exists(filepath):
-        filepath = os.path.join(current_dir, "menu_kb.md")
+    # Try gamelab_kb.md
+    filepath = os.path.join(current_dir, "gamelab_kb.md")
         
     if not os.path.exists(filepath):
-        st.error(f"Neither menu_kd.md nor menu_kb.md was found in: {current_dir}")
+        st.error(f"gamelab_kb.md was not found in: {current_dir}")
         st.stop()
         
     # Get last modification time of the file to invalidate cache if updated
@@ -376,7 +374,7 @@ def main():
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
 
-    if prompt := st.chat_input("ถามอะไรเกี่ยวกับ MilkLab"):
+    if prompt := st.chat_input("ถามอะไรเกี่ยวกับ GameLab"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.write(prompt)

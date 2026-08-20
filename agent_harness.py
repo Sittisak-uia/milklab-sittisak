@@ -22,7 +22,7 @@ from google.genai import types
 import agent_tools
 
 SYSTEM_INSTRUCTION = '''
-You are MilkLab Agent Router.
+You are GameLab Agent Router.
 Convert one Thai user message into ONE JSON action.
 
 Allowed actions:
@@ -225,7 +225,7 @@ def run(message: str, api_key: str | None = None) -> dict:
 
 def main() -> int:
     load_dotenv()
-    parser = argparse.ArgumentParser(description="MilkLab Agent Harness")
+    parser = argparse.ArgumentParser(description="GameLab Agent Harness")
     parser.add_argument("--cmd", required=True, help="คำสั่งภาษาไทย")
     args = parser.parse_args()
 

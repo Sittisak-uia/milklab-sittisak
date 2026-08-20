@@ -61,7 +61,7 @@ def fetch_sales_data() -> list[dict]:
     gc = get_gspread_client()
 
     sheet_id = os.environ.get("GOOGLE_SHEETS_ID") or os.environ.get("SPREADSHEET_ID")
-    sheet_name = os.environ.get("SPREADSHEET_NAME") or "MilkLab"
+    sheet_name = os.environ.get("SPREADSHEET_NAME") or "GameLab"
 
     try:
         if sheet_id:
@@ -70,7 +70,7 @@ def fetch_sales_data() -> list[dict]:
             try:
                 sh = gc.open(sheet_name)
             except gspread.exceptions.SpreadsheetNotFound:
-                sh = gc.open("MilkLab Sales")
+                sh = gc.open("GameLab Sales")
         worksheet = sh.sheet1
         return worksheet.get_all_records()
     except Exception as exc:
@@ -81,7 +81,7 @@ def generate_report(records: list[dict]) -> str:
     """Generate human-readable morning report text from sales records."""
     if not records:
         return (
-            "☀️ Morning Report - MilkLab° ☀️\n"
+            "☀️ Morning Report - GameLab° ☀️\n"
             "📅 รายงานสรุปยอดขาย\n\n"
             "⚠️ ยังไม่มีข้อมูลการขายในระบบ"
         )
@@ -106,21 +106,21 @@ def generate_report(records: list[dict]) -> str:
 
     menu_summary_lines = []
     for menu, qty in sorted(menu_sales.items(), key=lambda x: x[1], reverse=True):
-        menu_summary_lines.append(f"  • {menu}: {qty} ขวด")
+        menu_summary_lines.append(f"  • {menu}: {qty} ใบ")
 
     summary_text = "\n".join(menu_summary_lines)
 
     report = (
-        f"☀️ Morning Report - MilkLab° ☀️\n"
+        f"☀️ Morning Report - GameLab° ☀️\n"
         f"📅 รายงานสรุปยอดขายประจำเช้า\n"
         f"-----------------------------------\n"
         f"📊 ยอดขายรวม: {total_revenue:,.2f} บาท\n"
-        f"🥤 จำนวนรวม: {total_qty} ขวด ({len(records)} รายการ)\n"
-        f"🏆 เมนูขายดีที่สุด: {top_menu[0]} ({top_menu[1]} ขวด)\n\n"
-        f"📋 สรุปยอดตามเมนู:\n"
+        f"🎮 จำนวนรวม: {total_qty} ใบ ({len(records)} รายการ)\n"
+        f"🏆 สินค้าขายดีที่สุด: {top_menu[0]} ({top_menu[1]} ใบ)\n\n"
+        f"📋 สรุปยอดตามสินค้า:\n"
         f"{summary_text}\n"
         f"-----------------------------------\n"
-        f"ขอให้วันนี้เป็นวันที่ดีในการขายครับ! 🥛✨"
+        f"ขอให้วันนี้เป็นวันที่ดีในการขายครับ! 🎮✨"
     )
 
     return report

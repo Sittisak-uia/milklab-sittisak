@@ -96,8 +96,8 @@ def main():
                         if action == "log_sale":
                             reply_text = (
                                 f"✅ บันทึกยอดขายสำเร็จ!\n"
-                                f"📋 เมนู: {output.get('menu')}\n"
-                                f"🥤 จำนวน: {output.get('qty')} ขวด\n"
+                                f"📋 สินค้า: {output.get('menu')}\n"
+                                f"🎫 จำนวน: {output.get('qty')} ใบ\n"
                                 f"💵 ราคา: {output.get('price')} บาท\n"
                                 f"💰 ยอดรวม: {output.get('total')} บาท\n"
                                 f"🕒 เวลา: {output.get('timestamp')}"
