@@ -1,6 +1,6 @@
 ---
-title: MilkLab Solopreneur
-emoji: 🥛
+title: GamerZone Card Shop
+emoji: 🎮
 colorFrom: pink
 colorTo: indigo
 sdk: streamlit
@@ -9,13 +9,13 @@ app_file: app.py
 pinned: false
 ---
 
-# MilkLab° Solopreneur Starter (Course 69-1)
+# GamerZone Card Shop Solopreneur Starter (Course 69-1)
 
 Template repo สำหรับวิชา 31-407-106-406 : AI for Solopreneurs
 
 ## เริ่มต้น
 
-1. **Use this template** then Create a new repository (ตั้งชื่อ `milklab-<ชื่อ>`)
+1. **Use this template** then Create a new repository (ตั้งชื่อ `gamecard-<ชื่อ>`)
 2. เปิด **Codespaces** จาก repo ใหม่
 3. ตั้ง user-level Codespaces secret `GOOGLE_API_KEY` (ดู Quickstart)
 4. รัน `python scripts/verify_setup.py` ใน terminal
@@ -24,7 +24,7 @@ Template repo สำหรับวิชา 31-407-106-406 : AI for Solopreneur
 
 | ไฟล์ | Session | คำอธิบาย |
 |---|---|---|
-| `caption_generator.py` | S1 | สร้างแคปชั่นให้โพสต์ MilkLab |
+| `caption_generator.py` | S1 | สร้างแคปชั่นให้สินค้า GamerZone |
 | `sales_logger.py` | S2 | บันทึกยอดขายลง Google Sheets |
 | `agent_harness.py` | S2 | รับคำสั่งภาษาไทย เรียก tool |
 | `app.py` | S3 | Streamlit RAG chatbot |
