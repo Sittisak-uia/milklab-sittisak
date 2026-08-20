@@ -1,0 +1,25 @@
+name: Keep Space Awake (Ping)
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Runs daily at 03:00 UTC (10:00 AM ICT)
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping HuggingFace Space
+        env:
+          HF_USERNAME: ${{ secrets.HF_USERNAME || vars.HF_USERNAME || 'Sittisak-uia' }}
+          HF_SPACE_NAME: ${{ vars.HF_SPACE_NAME || 'milklab-rag' }}
+        run: |
+          # Convert username and space name to lowercase to form direct subdomain
+          USER_LOWER=$(echo "$HF_USERNAME" | tr '[:upper:]' '[:lower:]')
+          SPACE_LOWER=$(echo "$HF_SPACE_NAME" | tr '[:upper:]' '[:lower:]')
+          
+          echo "Pinging HuggingFace Space page: https://huggingface.co/spaces/${HF_USERNAME}/${HF_SPACE_NAME}"
+          curl -s -I "https://huggingface.co/spaces/${HF_USERNAME}/${HF_SPACE_NAME}"
+          
+          echo "Pinging direct Space URL: https://${USER_LOWER}-${SPACE_LOWER}.hf.space"
+          curl -s -I "https://${USER_LOWER}-${SPACE_LOWER}.hf.space"
