@@ -1,13 +1,11 @@
-"""MilkLab Sales Logger (S2).
+"""GamerZone Sales Logger (S2).
 
 Usage:
-    python sales_logger.py --menu "นมหมีฮอกไกโด" --qty 2 --price 65
+    python sales_logger.py --menu "Razer Gold PIN 100 บาท" --qty 2 --price 100
 
 Reads GOOGLE_SHEETS_CREDENTIALS and TELEGRAM_BOT_TOKEN (or LINE_CHANNEL_TOKEN) from env.
 Appends row [timestamp, menu, qty, price, total] to a Google Sheet,
 then sends a notification via Telegram or LINE bot.
-
-นักศึกษาต้องเติม TODO ใน 4 จุดด้านล่างใน Session 2 Lab 1.3
 """
 
 import argparse
@@ -42,7 +40,7 @@ def append_to_sheet(menu: str, qty: int, price: float) -> dict:
     client_email = creds_dict.get("client_email", "")
     sheet_id = os.environ.get("SPREADSHEET_ID") or os.environ.get("GOOGLE_SHEETS_ID")
     sheet_url = os.environ.get("SPREADSHEET_URL")
-    sheet_name = os.environ.get("SPREADSHEET_NAME") or os.environ.get("GOOGLE_SHEETS_NAME") or "MilkLab"
+    sheet_name = os.environ.get("SPREADSHEET_NAME") or os.environ.get("GOOGLE_SHEETS_NAME") or "GamerZone"
 
     try:
         if sheet_id:
@@ -125,10 +123,10 @@ def send_notification(message: str) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="MilkLab Sales Logger")
-    parser.add_argument("--menu", required=True, help="ชื่อเมนู")
-    parser.add_argument("--qty", type=int, required=True, help="จำนวนขวด")
-    parser.add_argument("--price", type=float, required=True, help="ราคาต่อขวด")
+    parser = argparse.ArgumentParser(description="GamerZone Sales Logger")
+    parser.add_argument("--menu", required=True, help="ชื่อบัตรเติมเกม/สินค้า")
+    parser.add_argument("--qty", type=int, required=True, help="จำนวนชิ้น")
+    parser.add_argument("--price", type=float, required=True, help="ราคาต่อหน่วย")
     args = parser.parse_args()
 
     try:
@@ -142,7 +140,7 @@ def main() -> int:
 
     try:
         # TODO 4: เรียก send_notification ด้วย message ที่บอกยอดที่บันทึก
-        provider = send_notification(f"บันทึก {args.menu} x{args.qty} = {total} บาท")
+        provider = send_notification(f"บันทึกการขายบัตร {args.menu} x{args.qty} ใบ = {total} บาท")
     except Exception as exc:
         print(f"[WARN] บันทึก Sheet สำเร็จแต่ส่งแจ้งเตือนล้มเหลว: {exc}", file=sys.stderr)
         return 0
